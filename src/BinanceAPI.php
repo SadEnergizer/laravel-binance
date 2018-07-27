@@ -211,6 +211,44 @@ class BinanceAPI
         return $b;
     }
 
+    public function getOrder($symbol, $origClientOrderId = null, $orderId = null)
+    {
+        $data = [
+            'symbol' => $symbol
+        ];
+
+        if (!is_null($origClientOrderId)) {
+            $data['origClientOrderId'] = $origClientOrderId;
+        } else if (!is_null($orderId)) {
+            $data['orderId'] = $orderId;
+        }
+
+        $b = $this->privateRequest('v3/order', $data, 'GET');
+
+        return $b;
+    }
+
+    public function cancelOrder($symbol, $origClientOrderId = null, $orderId = null, $newClientOrderId = null)
+    {
+        $data = [
+            'symbol' => $symbol
+        ];
+
+        if (!is_null($origClientOrderId)) {
+            $data['origClientOrderId'] = $origClientOrderId;
+        } else if (!is_null($orderId)) {
+            $data['orderId'] = $orderId;
+        }
+
+        if (!is_null($newClientOrderId)) {
+            $data['newClientOrderId'] = $newClientOrderId;
+        }
+
+        $b = $this->privateRequest('v3/order', $data, 'DELETE');
+
+        return $b;
+    }
+
     /**
      * Sell at market price
      *
@@ -354,6 +392,10 @@ class BinanceAPI
         if($method == "POST") {
             curl_setopt($this->curl,CURLOPT_POST, 1);
             curl_setopt($this->curl, CURLOPT_POSTFIELDS, array());
+        }
+
+        if ($method === 'DELETE') {
+            curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
         }
 
         //Get result
